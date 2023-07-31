@@ -11,7 +11,11 @@ class TreeNode:
         return str(arr)
 
     def __getitem__(self, item):
+        item = str(item)
         return self.children[item]
+
+    def __setitem__(self, key, newvalue):
+        self.children[key] = newvalue
 
     def __contains__(self, item):
         return item in self.children.keys()
@@ -22,16 +26,11 @@ class WordTree:
         self.dictionary = dictionary
         self.root = TreeNode()
         self.guess = set[str]()
-        # Create a node for all words containing X letter in first position
-        self.root.children["1"] = TreeNode()
-        # Create a node for all words containing X letter in second position
-        self.root.children["2"] = TreeNode()
-        # Create a node for all words containing X letter in third position
-        self.root.children["3"] = TreeNode()
-        # Create a node for all words containing X letter in fourth position
-        self.root.children["4"] = TreeNode()
-        # Create a node for all words containing X letter in fifth position
-        self.root.children["5"] = TreeNode()
+
+        for i in range(1, 6):
+            self.root.children[str(i)] = TreeNode()
+
+        print(self.root.children.keys())
 
     def insert(self, word):
         assert len(word) == 5, "Only words of length 5"
@@ -46,15 +45,38 @@ class WordTree:
         for word in self.dictionary:
             self.insert(word)
 
+    def union(self, a, b):
+        if a and b:
+            return a & b
+        else:
+            return a if a else b
+
     def words_with_letter_at_position(self, letter, position):
         node = self.root
         position = str(position)
-        node_pos = node.children[position]
+        node_pos = node[position]
         if letter in node_pos:
             return node_pos[letter].words
 
+    def words_with_letter_not_at_position(self, letter, position):
+        node = self.root
+        position = str(position)
+        words = set()
+        print(f"Now trying {letter}")
+        for pos in range(1, 6):
+            pos = str(pos)
+            if pos == position:
+                pass
+            if not words:
+                words = node[pos][letter].words.copy()
+            words = self.union(words, node[pos][letter].words)
+        return words
+
     def delete_word_letter(self, letter):
         node = self.root
-        for pos in node:
-            if letter in pos:
-                pos[letter] = TreeNode
+        for pos in range(1, 6):
+            if letter in node[pos]:
+                node[pos][letter] = {}
+
+    def update_guess(self, guess_update):
+        self.guess = self.union(self.guess, guess_update)
