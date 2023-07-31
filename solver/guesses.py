@@ -62,11 +62,10 @@ class WordTree:
         node = self.root
         position = str(position)
         words = set()
-        print(f"Now trying {letter}")
         for pos in range(1, 6):
             pos = str(pos)
             if pos == position:
-                pass
+                continue
             if not words:
                 words = node[pos][letter].words.copy()
             words = self.union(words, node[pos][letter].words)

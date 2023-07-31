@@ -40,8 +40,7 @@ def parse_word(word, hits, close):
 def calculate_predictions(wordtree: WordTree):
     # TODO: Implement the predictions using WordTree class
     # TODO: Make word prediction smarter
-    # IDEA: Force the random guess to be from the set of words with
-    # Green letters and that at least contain each one of the yellow letters
+    # NEED: To remove repeated letters ex: latte <-> matte
     for letter in incorrect_letters:
         wordtree.delete_word_letter(letter)
 
@@ -53,7 +52,6 @@ def calculate_predictions(wordtree: WordTree):
     for i, letter in enumerate(corr_bad_pos):
         if letter != "":
             guess_set = wordtree.words_with_letter_not_at_position(letter, i + 1)
-            print(guess_set)
             wordtree.update_guess(guess_set)
 
     return wordtree.guess
