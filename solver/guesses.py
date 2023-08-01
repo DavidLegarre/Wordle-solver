@@ -52,6 +52,7 @@ class WordTree:
             if char not in position:
                 position.children[char] = TreeNode()
             position.children[char].words.add(word)
+            self.guess.add(word)
 
     def initialize_tree(self):
         for word in self.dictionary:
@@ -89,6 +90,7 @@ class WordTree:
             if letter in node[pos]:
                 self.update_guess(node[pos][letter].words, "d")
                 node[pos][letter].delete_letter(letter)
+                # node[pos][letter] = TreeNode()
 
     def delete_word_letter_at_position(self, letter, position):
         node = self.root
