@@ -75,7 +75,21 @@ class WordTree:
         node = self.root
         for pos in range(1, 6):
             if letter in node[pos]:
-                node[pos][letter] = {}
+                self.update_guess(node[pos][letter].words, "d")
+                node[pos][letter] = TreeNode()
 
-    def update_guess(self, guess_update):
-        self.guess = self.union(self.guess, guess_update)
+    def delete_word_letter_at_position(self, letter, position):
+        node = self.root
+        position = str(position)
+        print(position)
+        if letter in node[position]:
+            self.update_guess(node[position][letter].words, "d")
+            # print(f"Deleting letter {letter} at position {position}")
+            node[position][letter] = TreeNode()
+        print(node[position][letter])
+
+    def update_guess(self, guess_update, mode="U"):
+        if mode == "U":
+            self.guess = self.union(self.guess, guess_update)
+        elif mode == "d":
+            self.guess = self.guess - guess_update

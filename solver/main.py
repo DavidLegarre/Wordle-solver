@@ -13,15 +13,14 @@ correct_letters = ["", "", "", "", ""]
 corr_bad_pos = ["", "", "", "", ""]
 # Incorrect letters tried
 incorrect_letters = set()
+# Store letters already placed and remove it from the other positions
+letters_placed = {}
 
 
 def parse_word(word, hits, close):
     # This function takes the guess provided by the user and interprets it
     # storing it in the correct way to later calculate guesses
 
-    print(f"{close}")
-
-    # add correct letters
     for pos in hits:
         pos = pos - 1
         correct_letters[pos] = word[pos]
@@ -30,9 +29,12 @@ def parse_word(word, hits, close):
         pos = pos - 1
         corr_bad_pos[pos] = word[pos]
 
-    for char in word:
+    for i, char in enumerate(word):
+        i = i + 1
         if char not in correct_letters and char not in corr_bad_pos:
             incorrect_letters.add(char)
+        if char in correct_letters and i not in hits:
+            letters_placed[char] = str(i)
 
     return word
 
@@ -44,6 +46,9 @@ def calculate_predictions(wordtree: WordTree):
     for letter in incorrect_letters:
         wordtree.delete_word_letter(letter)
 
+    for letter in letters_placed:
+        wordtree.delete_word_letter_at_position(letter, letters_placed[letter])
+
     for i, letter in enumerate(correct_letters):
         if letter != "":
             guess_set = wordtree.words_with_letter_at_position(letter, i + 1)
@@ -51,7 +56,8 @@ def calculate_predictions(wordtree: WordTree):
 
     for i, letter in enumerate(corr_bad_pos):
         if letter != "":
-            guess_set = wordtree.words_with_letter_not_at_position(letter, i + 1)
+            guess_set = wordtree.words_with_letter_not_at_position(
+                letter, i + 1)
             wordtree.update_guess(guess_set)
 
     return wordtree.guess
@@ -77,7 +83,8 @@ def solver():
         print(word)
         print(f"Correct letters positions:\n{correct_letters}")
         print(f"Correct letters but wrong positions:\n{corr_bad_pos}")
-        print(f"wrong letters:\n {incorrect_letters}")
+        print(f"Wrong letters:\n {incorrect_letters}")
+        print(f"Placed letters:\n {letters_placed}")
 
         calculate_predictions(wordtree)
 
