@@ -1,8 +1,20 @@
+def calculate_letter_freq(word):
+    frequency = {}
+    for char in word:
+        frequency[char] = frequency.get(char, 0) + 1
+
+    return frequency
+
+
 class TreeNode:
     def __init__(self) -> None:
         self.children = {}
         self.words = set[str]()
         self.is_end_of_word = False
+
+    def delete_letter(self, letter):
+        if letter in self.children:
+            del self.children[letter]
 
     def __str__(self):
         arr = []
@@ -45,7 +57,7 @@ class WordTree:
         for word in self.dictionary:
             self.insert(word)
 
-    def union(self, a, b):
+    def intersection(self, a, b):
         if a and b:
             return a & b
         else:
@@ -68,7 +80,7 @@ class WordTree:
                 continue
             if not words:
                 words = node[pos][letter].words.copy()
-            words = self.union(words, node[pos][letter].words)
+            words = words | node[pos][letter].words
         return words
 
     def delete_word_letter(self, letter):
@@ -76,7 +88,7 @@ class WordTree:
         for pos in range(1, 6):
             if letter in node[pos]:
                 self.update_guess(node[pos][letter].words, "d")
-                node[pos][letter] = TreeNode()
+                node[pos][letter].delete_letter(letter)
 
     def delete_word_letter_at_position(self, letter, position):
         node = self.root
@@ -90,6 +102,31 @@ class WordTree:
 
     def update_guess(self, guess_update, mode="U"):
         if mode == "U":
-            self.guess = self.union(self.guess, guess_update)
+            self.guess = self.intersection(self.guess, guess_update)
         elif mode == "d":
-            self.guess = self.guess - guess_update
+            self.guess -= guess_update
+
+    def letter_freq(self):
+        frequency = {}
+        for word in self.guess:
+            for letter in word:
+                frequency[letter] = frequency.get(letter, 0) + 1
+
+        return frequency
+
+    def get_guess(self):
+        highest_sum = 0
+        max_word = None
+        frequency = self.letter_freq()
+        # Get the top 10 most frequent letters for now
+        top_freq = sorted(frequency, key=frequency.get, reverse=False)[:10]
+
+        for word in self.guess:
+            word_freq = calculate_letter_freq(word)
+            freq_sum = sum(word_freq.get(letter, 0) for letter in top_freq)
+
+            if freq_sum > highest_sum:
+                highest_sum = freq_sum
+                max_word = word
+
+        return max_word

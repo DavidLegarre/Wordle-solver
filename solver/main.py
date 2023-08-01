@@ -1,9 +1,9 @@
 from dictionary.wordextractor import extractwords
 from .guesses import WordTree
-import random
 
 message = """
-I recommend starting with "salet" as shown in https://www.youtube.com/watch?v=fRed0Xmc2Wg
+I recommend starting with "salet" as shown in 
+https://www.youtube.com/watch?v=fRed0Xmc2Wg
 """
 
 words = ["", "", "", "", ""]
@@ -30,32 +30,33 @@ def parse_word(word, hits, close):
         corr_bad_pos[pos] = word[pos]
 
     for i, char in enumerate(word):
-        i = i + 1
+        # i = i + 1
         if char not in correct_letters and char not in corr_bad_pos:
             incorrect_letters.add(char)
-        if char in correct_letters and i not in hits:
+        if char in correct_letters and words[i] != char:
             letters_placed[char] = str(i)
 
     return word
 
 
 def calculate_predictions(wordtree: WordTree):
-    # TODO: Implement the predictions using WordTree class
     # TODO: Make word prediction smarter
-    # NEED: To remove repeated letters ex: latte <-> matte
+    # Now trying a frequentist analysis
     for letter in incorrect_letters:
+        print(letter)
         wordtree.delete_word_letter(letter)
 
     for letter in letters_placed:
+        continue
         wordtree.delete_word_letter_at_position(letter, letters_placed[letter])
 
     for i, letter in enumerate(correct_letters):
-        if letter != "":
+        if letter:
             guess_set = wordtree.words_with_letter_at_position(letter, i + 1)
             wordtree.update_guess(guess_set)
 
     for i, letter in enumerate(corr_bad_pos):
-        if letter != "":
+        if letter:
             guess_set = wordtree.words_with_letter_not_at_position(
                 letter, i + 1)
             wordtree.update_guess(guess_set)
@@ -80,12 +81,13 @@ def solver():
         if word == "":
             break
         parse_word(word, hits, close)
-        print(word)
-        print(f"Correct letters positions:\n{correct_letters}")
-        print(f"Correct letters but wrong positions:\n{corr_bad_pos}")
+        # print(word)
+        # print(f"Correct letters positions:\n{correct_letters}")
+        # print(f"Correct letters but wrong positions:\n{corr_bad_pos}")
         print(f"Wrong letters:\n {incorrect_letters}")
-        print(f"Placed letters:\n {letters_placed}")
+        # print(f"Placed letters:\n {letters_placed}")
 
         calculate_predictions(wordtree)
 
-        print(f"Try {random.choice(list(wordtree.guess))} ")
+        print(f"Try {wordtree.get_guess()} ")
+        # print(f"New Guesses:{sorted(list(wordtree.guess))}")
