@@ -13,8 +13,6 @@ correct_letters = ["", "", "", "", ""]
 corr_bad_pos = ["", "", "", "", ""]
 # Incorrect letters tried
 incorrect_letters = set()
-# Store letters already placed and remove it from the other positions
-letters_placed = {}
 
 
 def parse_word(word, hits, close):
@@ -29,12 +27,9 @@ def parse_word(word, hits, close):
         pos = pos - 1
         corr_bad_pos[pos] = word[pos]
 
-    for i, char in enumerate(word):
-        # i = i + 1
+    for char in word:
         if char not in correct_letters and char not in corr_bad_pos:
             incorrect_letters.add(char)
-        if char in correct_letters and words[i] != char:
-            letters_placed[char] = str(i)
 
     return word
 
@@ -45,10 +40,6 @@ def calculate_predictions(wordtree: WordTree):
     for letter in incorrect_letters:
         print(letter)
         wordtree.delete_word_letter(letter)
-
-    for letter in letters_placed:
-        continue
-        wordtree.delete_word_letter_at_position(letter, letters_placed[letter])
 
     for i, letter in enumerate(correct_letters):
         if letter:
